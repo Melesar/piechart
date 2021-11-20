@@ -135,15 +135,19 @@ impl Chart {
             if self.legend {
                 output.push_str(&" ".repeat(padding_len + LABEL_PADDING));
 
-                let max_label_idx = (data.len() - 1) as i32;
+                let max_label_idx = data.len() as i32;
 
                 let mut iter = (0..=max_label_idx)
                     .map(|x| x * 2) // space between labels
                     .map(|x| x - max_label_idx); // center at y=0
 
                 if let Some(idx) = iter.position(|i| i == y) {
-                    let item = &data[idx];
-                    output.push_str(&item.format_label(total));
+                    if let Some(item) = data.get(idx) {
+                        output.push_str(&item.format_label(total));
+                    } else {
+                        let total : f32 = data.iter().map(|d| d.value).sum();
+                        output.push_str(&format!("Total: {}", total));
+                    }
                 }
             }
 
